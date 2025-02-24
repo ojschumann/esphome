@@ -69,7 +69,7 @@ void ILI9XXXDisplay::alloc_buffer_() {
   } else {
     this->init_internal_(this->get_buffer_length_());
   }
-  ESP_LOGCONFIG(TAG, "Setting up ILI9xxx memory to: %i", this->get_buffer_length_() );
+  ESP_LOGE(TAG, "Setting up ILI9xxx memory to: %i", this->get_buffer_length_() );
   if (this->buffer_ == nullptr) {
     this->mark_failed();
   }
