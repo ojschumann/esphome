@@ -73,8 +73,8 @@ void STMPE610Component::update_touches() {
     for (uint8_t i = 0; i < 4; i++)
       data[i] = this->read_reg_8(0xD7);
 
-    x_raw = (data[0] << 4) | (data[1] >> 4);
-    y_raw = ((data[1] & 0x0F) << 8) | data[2];
+    x_raw = (static_cast<int16_t>(data[0]) << 4) | (data[1] >> 4);
+    y_raw = (static_cast<int16_t>(data[1] & 0x0F) << 8) | data[2];
     z_raw = data[3];
 
 
