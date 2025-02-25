@@ -78,6 +78,7 @@ void STMPE610Component::update_touches() {
     z_raw = data[3];
 
 
+    ESP_LOGD(TAG, "Touchscreen Update [%d, %d, %d, %d] => (%d, %d)", data[0], data[1], data[2], data[3], x_raw, y_raw);
     //ESP_LOGD(TAG, "Touchscreen Update [%d, %d], z = %d", x_raw, y_raw, z_raw);
 
     this->add_raw_touch_position_(0, x_raw, y_raw, z_raw);
