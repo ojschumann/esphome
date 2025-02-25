@@ -101,9 +101,11 @@ uint16_t STMPE610Component::get_version_() {  // NOLINT
   this->write_byte(0x80);
 
   delay(1);
-  uint16_t v = (this->read_byte() << 8) | this->read_byte();
+  uint16_t v = this->read_byte();
+  v <<= 8;
+  v |= this->read_byte();
+
   ESP_LOGD(TAG, "version: %x", v);
-  ESP_LOGE(TAG, "version: %x", v);
   this->version_ = v;
 
   return v;
