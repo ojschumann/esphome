@@ -27,7 +27,7 @@ void STMPE610Component::setup() {
     this->set_mode(spi::MODE1);
     this->version_ = this->get_version_();
     if (this->version_ != 0x811) {
-      this->version = 0xffff;
+      this->version_ = 0xffff;
     }
   }
   //this->read_adc_(0xD0);  // ADC powerdown, enable PENIRQ pin
@@ -102,12 +102,11 @@ int16_t STMPE610Component::read_adc_(uint8_t ctrl) {  // NOLINT
   return ((data[0] << 8) | data[1]) >> 3;
 }
 
-uint8_t read_reg_8(uint8_t reg) {
+uint8_t STMPE610Component::read_reg_8(uint8_t reg) {
   // write register to device with 0x80 read flag
   this->write_byte(0x80 | reg);
   delay(1);
   return this->read_byte();
-
 }
 
 uint16_t STMPE610Component::get_version_() {  // NOLINT
