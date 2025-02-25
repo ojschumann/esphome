@@ -66,7 +66,7 @@ void STMPE610Component::update_touches() {
   while (!this->is_buffer_empty()) {
     int16_t x_raw { 0 };
     int16_t y_raw { 0 };
-    int8_t z_raw { 0 };
+    int16_t z_raw { 0 };
 
 
     uint8_t data[4];
