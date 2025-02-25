@@ -173,11 +173,11 @@ uint16_t STMPE610Component::get_version_() {  // NOLINT
 }
 
 bool STMPE610Component::is_touched() {
-  return this->reg_read_8(STMPE_TSC_CTRL) & 0x80;
+  return this->read_reg_8(STMPE_TSC_CTRL) & 0x80;
 }
 
 bool STMPE610Component::is_buffer_empty() {
-  return this->reg_read_8(STMPE_FIFO_STA) & STMPE_FIFO_STA_EMPTY;
+  return this->read_reg_8(STMPE_FIFO_STA) & STMPE_FIFO_STA_EMPTY;
 }
 
 
