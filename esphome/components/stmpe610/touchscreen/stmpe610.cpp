@@ -22,12 +22,18 @@ void STMPE610Component::setup() {
     this->attach_interrupt_(this->irq_pin_, gpio::INTERRUPT_FALLING_EDGE);
   }
   this->spi_setup();
-  this->get_version_();
+  this->version_ = this->get_version_();
+  if (this->version_ != 0x811) {
+    this->set_mode(spi::MODE1);
+    this->version_ = this->get_version_();
+    if (this->version_ != 0x811) {
+      this->version = 0xffff;
+    }
+  }
   //this->read_adc_(0xD0);  // ADC powerdown, enable PENIRQ pin
 }
 
 void STMPE610Component::update_touches() {
-  this->get_version_();
 #if 0
   int16_t data[6], x_raw, y_raw, z_raw;
   bool touch = false;
@@ -96,22 +102,19 @@ int16_t STMPE610Component::read_adc_(uint8_t ctrl) {  // NOLINT
   return ((data[0] << 8) | data[1]) >> 3;
 }
 
+uint8_t read_reg_8(uint8_t reg) {
+  // write register to device with 0x80 read flag
+  this->write_byte(0x80 | reg);
+  delay(1);
+  return this->read_byte();
+
+}
+
 uint16_t STMPE610Component::get_version_() {  // NOLINT
 
   enable();
-  this->write_byte(0x80);
-  delay(1);
-  uint16_t v = this->read_byte();
-  v <<= 8;
-
-  this->write_byte(0x81);
-  delay(1);
-  v |= this->read_byte();
-
+  uint16_t v = (this->read_reg_8(0) << 8 ) | this->read_reg_8(1);
   disable();
-
-  ESP_LOGD(TAG, "version: %x", v);
-  this->version_ = v;
 
   return v;
 }

@@ -27,6 +27,8 @@ class STMPE610Component : public Touchscreen,
 
  protected:
 
+  uint8_t read_reg_8(uint8_t reg);
+
   int16_t read_adc_(uint8_t ctrl);
 
   uint16_t get_version_();
