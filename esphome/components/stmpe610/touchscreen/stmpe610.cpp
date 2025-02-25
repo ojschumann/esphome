@@ -27,6 +27,7 @@ void STMPE610Component::setup() {
 }
 
 void STMPE610Component::update_touches() {
+  this->get_version_();
 #if 0
   int16_t data[6], x_raw, y_raw, z_raw;
   bool touch = false;
