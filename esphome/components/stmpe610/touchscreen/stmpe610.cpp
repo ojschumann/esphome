@@ -28,12 +28,67 @@ void STMPE610Component::setup() {
     this->version_ = this->get_version_();
     if (this->version_ != 0x811) {
       this->version_ = 0xffff;
+      return;
     }
   }
-  //this->read_adc_(0xD0);  // ADC powerdown, enable PENIRQ pin
+
+  // Init stolen from https://github.com/adafruit/Adafruit_STMPE610
+
+  this->write_reg_8(STMPE_SYS_CTRL1, STMPE_SYS_CTRL1_RESET);
+  delay(10);
+
+  for (uint8_t i = 0; i < 65; i++) {
+    readRegister8(i);
+  }
+
+  this->write_reg_8(STMPE_SYS_CTRL2, 0x0); // turn on clocks!
+  this->write_reg_8(STMPE_TSC_CTRL,
+                 STMPE_TSC_CTRL_XYZ | STMPE_TSC_CTRL_EN); // XYZ and enable!
+  // Serial.println(readRegister8(STMPE_TSC_CTRL), HEX);
+  this->write_reg_8(STMPE_INT_EN, STMPE_INT_EN_TOUCHDET);
+  this->write_reg_8(STMPE_ADC_CTRL1, STMPE_ADC_CTRL1_10BIT |
+                                      (0x6 << 4)); // 96 clocks per conversion
+  this->write_reg_8(STMPE_ADC_CTRL2, STMPE_ADC_CTRL2_6_5MHZ);
+  this->write_reg_8(STMPE_TSC_CFG, STMPE_TSC_CFG_4SAMPLE |
+                                    STMPE_TSC_CFG_DELAY_1MS |
+                                    STMPE_TSC_CFG_SETTLE_5MS);
+  this->write_reg_8(STMPE_TSC_FRACTION_Z, 0x6);
+  this->write_reg_8(STMPE_FIFO_TH, 1);
+  this->write_reg_8(STMPE_FIFO_STA, STMPE_FIFO_STA_RESET);
+  this->write_reg_8(STMPE_FIFO_STA, 0); // unreset
+  this->write_reg_8(STMPE_TSC_I_DRIVE, STMPE_TSC_I_DRIVE_50MA);
+  this->write_reg_8(STMPE_INT_STA, 0xFF); // reset all ints
+  this->write_reg_8(STMPE_INT_CTRL,
+                 STMPE_INT_CTRL_POL_HIGH | STMPE_INT_CTRL_ENABLE);
 }
 
 void STMPE610Component::update_touches() {
+  while (!this->is_buffer_empty()) {
+    int16_t x_raw { 0 };
+    int16_t y_raw { 0 };
+    int8_t z_raw { 0 };
+
+
+    uint8_t data[4];
+    for (uint8_t i = 0; i < 4; i++)
+      data[i] = this_reg_read_8(0xD7);
+
+    x_raw = (data[0] << 4) | (data[1] >> 4);
+    y_raw = ((data[1] & 0x0F) << 8) | data[2];
+    z_raw = data[3];
+
+
+    ESP_LOGD(TAG, "Touchscreen Update [%d, %d], z = %d", x_raw, y_raw, z_raw);
+
+    this->add_raw_touch_position_(0, x_raw, y_raw, z_raw);
+
+  }
+
+  if (bufferEmpty())
+    writeRegister8(STMPE_INT_STA, 0xFF); // reset all ints
+    
+
+  }
 #if 0
   int16_t data[6], x_raw, y_raw, z_raw;
   bool touch = false;
@@ -91,32 +146,42 @@ void STMPE610Component::dump_config() {
 
 // float STMPE610Component::get_setup_priority() const { return setup_priority::DATA; }
 
-int16_t STMPE610Component::read_adc_(uint8_t ctrl) {  // NOLINT
-  uint8_t data[2];
-
-  this->write_byte(ctrl);
-  delay(1);
-  data[0] = this->read_byte();
-  data[1] = this->read_byte();
-
-  return ((data[0] << 8) | data[1]) >> 3;
-}
 
 uint8_t STMPE610Component::read_reg_8(uint8_t reg) {
   // write register to device with 0x80 read flag
+  enable();
   this->write_byte(0x80 | reg);
   delay(1);
-  return this->read_byte();
+  uint8_t value = this->read_byte();
+  disable();
+  return value;
+}
+
+void STMPE610Component::write_reg_8(uint8_t reg, value) {
+  // write register to device with 0x80 read flag
+  enable();
+  this->write_byte(reg);
+  this->write_byte(value);
+  disable();
 }
 
 uint16_t STMPE610Component::get_version_() {  // NOLINT
 
-  enable();
   uint16_t v = (this->read_reg_8(0) << 8 ) | this->read_reg_8(1);
-  disable();
 
   return v;
 }
+
+bool STMPE610Component::is_touched() {
+  return this->reg_read_8(STMPE_TSC_CTRL) & 0x80;
+}
+
+bool STMPE610Component::is_buffer_empty() {
+  return this->reg_read_8(STMPE_FIFO_STA) & STMPE_FIFO_STA_EMPTY;
+}
+
+
+
 
 }  // namespace stmpe610
 }  // namespace esphome
