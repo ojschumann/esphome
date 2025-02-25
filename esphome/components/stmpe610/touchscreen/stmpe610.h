@@ -34,6 +34,7 @@ class STMPE610Component : public Touchscreen,
   void update_touches() override;
 
   int16_t threshold_;
+  int16_t version_ { 0 };
 
   InternalGPIOPin *irq_pin_{nullptr};
 };
