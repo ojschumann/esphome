@@ -77,6 +77,7 @@ void STMPE610Component::dump_config() {
 
   ESP_LOGCONFIG(TAG, "  threshold: %d", this->threshold_);
   ESP_LOGCONFIG(TAG, "  srcver: 1");
+  ESP_LOGCONFIG(TAG, "  hwver: %x", this->version_);
 
   LOG_UPDATE_INTERVAL(this);
 }
@@ -102,6 +103,7 @@ uint16_t STMPE610Component::get_version_() {  // NOLINT
   uint16_t v = (this->read_byte() << 8) | this->read_byte();
   ESP_LOGD(TAG, "version: %x", v);
   ESP_LOGE(TAG, "version: %x", v);
+  this->version_ = v;
 
   return v;
 }
