@@ -38,7 +38,7 @@ void STMPE610Component::setup() {
   delay(10);
 
   for (uint8_t i = 0; i < 65; i++) {
-    readRegister8(i);
+    this->read_reg_8(i);
   }
 
   this->write_reg_8(STMPE_SYS_CTRL2, 0x0); // turn on clocks!
@@ -71,7 +71,7 @@ void STMPE610Component::update_touches() {
 
     uint8_t data[4];
     for (uint8_t i = 0; i < 4; i++)
-      data[i] = this_reg_read_8(0xD7);
+      data[i] = this->reg_read_8(0xD7);
 
     x_raw = (data[0] << 4) | (data[1] >> 4);
     y_raw = ((data[1] & 0x0F) << 8) | data[2];
@@ -84,8 +84,8 @@ void STMPE610Component::update_touches() {
 
   }
 
-  if (bufferEmpty())
-    writeRegister8(STMPE_INT_STA, 0xFF); // reset all ints
+  if (this->is_buffer_empty())
+    this->write_reg_8(STMPE_INT_STA, 0xFF); // reset all ints
     
 
   }
