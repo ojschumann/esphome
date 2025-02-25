@@ -21,6 +21,7 @@ void STMPE610Component::setup() {
     this->attach_interrupt_(this->irq_pin_, gpio::INTERRUPT_FALLING_EDGE);
   }
   this->spi_setup();
+  this->get_version_();
   //this->read_adc_(0xD0);  // ADC powerdown, enable PENIRQ pin
 }
 
