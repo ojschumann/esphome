@@ -75,6 +75,7 @@ void STMPE610Component::dump_config() {
   ESP_LOGCONFIG(TAG, "  Invert Y: %s", YESNO(this->invert_y_));
 
   ESP_LOGCONFIG(TAG, "  threshold: %d", this->threshold_);
+  ESP_LOGCONFIG(TAG, "  srcver: 1");
 
   LOG_UPDATE_INTERVAL(this);
 }
@@ -98,7 +99,8 @@ uint16_t STMPE610Component::get_version_() {  // NOLINT
 
   delay(1);
   uint16_t v = (this->read_byte() << 8) | this->read_byte();
-  ESP_LOGD(TAG, "  version: %x", v);
+  ESP_LOGD(TAG, "version: %x", v);
+  ESP_LOGE(TAG, "version: %x", v);
 
   return v;
 }
