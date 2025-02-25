@@ -1,4 +1,4 @@
-#include "xpt2046.h"
+#include "stmpe610.h"
 #include "esphome/core/log.h"
 #include "esphome/core/helpers.h"
 
@@ -102,5 +102,5 @@ uint16_t STMPE610Component::get_version_() {  // NOLINT
   return v;
 }
 
-}  // namespace xpt2046
+}  // namespace stmpe610
 }  // namespace esphome
