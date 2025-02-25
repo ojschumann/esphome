@@ -117,7 +117,7 @@ using namespace touchscreen;
 
 class STMPE610Component : public Touchscreen,
                           public spi::SPIDevice<spi::BIT_ORDER_MSB_FIRST, spi::CLOCK_POLARITY_LOW,
-                                                spi::CLOCK_PHASE_LEADING, spi::DATA_RATE_2MHZ> {
+                                                spi::CLOCK_PHASE_LEADING, spi::DATA_RATE_1MHZ> {
  public:
   /// Set the threshold for the touch detection.
   void set_threshold(int16_t threshold) { this->threshold_ = threshold; }
