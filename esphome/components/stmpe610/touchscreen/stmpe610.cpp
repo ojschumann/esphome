@@ -10,6 +10,7 @@ namespace stmpe610 {
 static const char *const TAG = "stmpe610";
 
 void STMPE610Component::setup() {
+  ESP_LOGD(TAG, "setup");
   if (this->irq_pin_ != nullptr) {
     // The pin reports a touch with a falling edge. Unfortunately the pin goes also changes state
     // while the channels are read and wiring it as an interrupt is not straightforward and would
