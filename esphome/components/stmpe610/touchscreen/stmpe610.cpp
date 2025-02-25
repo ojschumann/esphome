@@ -157,7 +157,7 @@ uint8_t STMPE610Component::read_reg_8(uint8_t reg) {
   return value;
 }
 
-void STMPE610Component::write_reg_8(uint8_t reg, value) {
+void STMPE610Component::write_reg_8(uint8_t reg, uint8_t value) {
   // write register to device with 0x80 read flag
   enable();
   this->write_byte(reg);
