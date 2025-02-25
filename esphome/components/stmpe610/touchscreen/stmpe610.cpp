@@ -98,6 +98,7 @@ int16_t STMPE610Component::read_adc_(uint8_t ctrl) {  // NOLINT
 
 uint16_t STMPE610Component::get_version_() {  // NOLINT
 
+  this->set_mode(MODE1);
   this->write_byte(0x80);
 
   delay(1);
