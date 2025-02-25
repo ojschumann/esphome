@@ -98,13 +98,16 @@ int16_t STMPE610Component::read_adc_(uint8_t ctrl) {  // NOLINT
 
 uint16_t STMPE610Component::get_version_() {  // NOLINT
 
-  this->set_mode(spi::MODE1);
+  enable();
+  //this->set_mode(spi::MODE1);
   this->write_byte(0x80);
 
   delay(1);
   uint16_t v = this->read_byte();
   v <<= 8;
   v |= this->read_byte();
+
+  disable();
 
   ESP_LOGD(TAG, "version: %x", v);
   this->version_ = v;
